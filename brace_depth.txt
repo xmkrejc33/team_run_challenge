@@ -1,0 +1,192 @@
+﻿ 501: depth=3 |    if (mounted) {|
+ 502: depth=3 |      Navigator.pushAndRemoveUntil(|
+ 503: depth=3 |        context,|
+ 504: depth=3 |        MaterialPageRoute(builder: (context) => const AuthScreen()),|
+ 505: depth=3 |        (route) => false,|
+ 506: depth=3 |      );|
+ 507: depth=2 |    }|
+ 508: depth=1 |  }|
+ 509: depth=1 ||
+ 510: depth=1 ||
+ 511: depth=1 |  @override|
+ 512: depth=2 |  Widget build(BuildContext context) {|
+ 513: depth=2 |    return Scaffold(|
+ 514: depth=2 |      appBar: AppBar(|
+ 515: depth=2 |        title: const Text('Teamové závody', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),|
+ 516: depth=2 |        backgroundColor: Colors.orange,|
+ 517: depth=2 |        centerTitle: true,|
+ 518: depth=2 |        actions: [|
+ 519: depth=2 |          buildAppMenu(context),|
+ 520: depth=2 |        ],|
+ 521: depth=2 |      ),|
+ 522: depth=2 |      body: Padding(|
+ 523: depth=2 |        padding: const EdgeInsets.all(16.0),|
+ 524: depth=2 |        child: SingleChildScrollView(|
+ 525: depth=2 |          physics: const BouncingScrollPhysics(),|
+ 526: depth=2 |          child: Column(|
+ 527: depth=2 |            crossAxisAlignment: CrossAxisAlignment.start,|
+ 528: depth=2 |            children: [|
+ 529: depth=2 |              Card(|
+ 530: depth=2 |                color: Colors.orange[50],|
+ 531: depth=2 |                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: Colors.orange)),|
+ 532: depth=2 |                child: Padding(|
+ 533: depth=2 |                  padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),|
+ 534: depth=2 |                  child: Row(|
+ 535: depth=2 |                    children: [|
+ 536: depth=2 |                      Icon(Icons.lock_clock, color: Colors.orange[800]),|
+ 537: depth=2 |                      const SizedBox(width: 12),|
+ 538: depth=2 |                      Expanded(|
+ 539: depth=2 |                        child: Text(|
+ 540: depth=2 |                          _lastSyncAt != null|
+ 541: depth=2 |                              ? '${_lastSyncAt!.hour.toString().padLeft(2, '0')}:${_lastSyncAt!.minute.toString().padLeft(2, '0')} ${_lastSyncAt!.day.toString().padLeft(2, '0')}.${_lastSyncAt!.month.toString().padLeft(2, '0')}.${_lastSyncAt!.year}'|
+ 542: depth=2 |                              : '--:--',|
+ 543: depth=2 |                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),|
+ 544: depth=2 |                          textAlign: TextAlign.right,|
+ 545: depth=2 |                          softWrap: true,|
+ 546: depth=2 |                          maxLines: 1,|
+ 547: depth=2 |                          overflow: TextOverflow.ellipsis,|
+ 548: depth=2 |                        ),|
+ 549: depth=2 |                      ),|
+ 550: depth=2 |                      if (_isSyncingHealth)|
+ 551: depth=2 |                        const Padding(|
+ 552: depth=2 |                          padding: EdgeInsets.only(left: 12.0),|
+ 553: depth=2 |                          child: SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 3)),|
+ 554: depth=2 |                        ),|
+ 555: depth=2 |                    ],|
+ 556: depth=2 |                  ),|
+ 557: depth=2 |                ),|
+ 558: depth=2 |              ),|
+ 559: depth=2 |              const SizedBox(height: 16),|
+ 560: depth=2 |              const Text('Průběžný stav závodu', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),|
+ 561: depth=2 |              const SizedBox(height: 12),|
+ 562: depth=2 ||
+ 563: depth=2 |            StreamBuilder<List<Map<String, dynamic>>>(|
+ 564: depth=2 |              stream: _supabase.from('teams').stream(primaryKey: ['id']).order('id', ascending: true),|
+ 565: depth=3 |              builder: (context, snapshot) {|
+ 566: depth=4 |                if (snapshot.connectionState == ConnectionState.waiting) {|
+ 567: depth=4 |                  return const Center(child: CircularProgressIndicator());|
+ 568: depth=3 |                }|
+ 569: depth=3 |                if (snapshot.hasError) return Text('Chyba týmů: ${snapshot.error}');|
+ 570: depth=3 |                |
+ 571: depth=3 |                final teamsData = snapshot.data ?? [];|
+ 572: depth=3 |                if (teamsData.isEmpty) return const Text('V databázi chybí data týmů.');|
+ 573: depth=3 ||
+ 574: depth=3 |                return ListView.builder(|
+ 575: depth=3 |                  shrinkWrap: true,|
+ 576: depth=3 |                  physics: const NeverScrollableScrollPhysics(),|
+ 577: depth=3 |                  itemCount: teamsData.length,|
+ 578: depth=4 |                  itemBuilder: (context, index) {|
+ 579: depth=4 |                    final team = teamsData[index];|
+ 580: depth=4 |                    final String name = team['name'] ?? 'Tým';|
+ 581: depth=4 |                    final double km = (team['km'] as num).toDouble();|
+ 582: depth=4 |                    |
+ 583: depth=4 |                    final List<Color> teamColors = [Colors.blue, Colors.green, Colors.purple, Colors.teal];|
+ 584: depth=4 |                    final color = teamColors[index % teamColors.length];|
+ 585: depth=4 ||
+ 586: depth=4 |                    return Padding(|
+ 587: depth=4 |                      padding: const EdgeInsets.only(bottom: 12.0),|
+ 588: depth=4 |                      child: _buildTeamCard(|
+ 589: depth=4 |                        name,|
+ 590: depth=4 |                        km,|
+ 591: depth=4 |                        targetKm,|
+ 592: depth=4 |                        color,|
+ 593: depth=4 |                      ),|
+ 594: depth=4 |                    );|
+ 595: depth=3 |                  },|
+ 596: depth=3 |                );|
+ 597: depth=2 |              },|
+ 598: depth=2 |            ),|
+ 599: depth=2 ||
+ 600: depth=2 |            const SizedBox(height: 16),|
+ 601: depth=2 |            const Text('Historie aktivit', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),|
+ 602: depth=2 |            const SizedBox(height: 8),|
+ 603: depth=2 ||
+ 604: depth=2 |            StreamBuilder<List<Map<String, dynamic>>>(|
+ 605: depth=2 |              stream: _supabase.from('activities').stream(primaryKey: ['id']).order('id', ascending: false),|
+ 606: depth=3 |              builder: (context, snapshot) {|
+ 607: depth=4 |                if (snapshot.connectionState == ConnectionState.waiting) {|
+ 608: depth=4 |                  return const Center(child: CircularProgressIndicator());|
+ 609: depth=3 |                }|
+ 610: depth=3 |                if (snapshot.hasError) return Text('Chyba historie: ${snapshot.error}');|
+ 611: depth=3 ||
+ 612: depth=3 |                final activities = snapshot.data ?? [];|
+ 613: depth=3 ||
+ 614: depth=4 |                if (activities.isEmpty) {|
+ 615: depth=4 |                  return const Center(|
+ 616: depth=4 |                    child: Text('Zatím nebyly zapsány žádné aktivity.', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)),|
+ 617: depth=4 |                  );|
+ 618: depth=3 |                }|
+ 619: depth=3 ||
+ 620: depth=3 |                return ListView.builder(|
+ 621: depth=3 |                  shrinkWrap: true,|
+ 622: depth=3 |                  physics: const NeverScrollableScrollPhysics(),|
+ 623: depth=3 |                  itemCount: activities.length,|
+ 624: depth=4 |                  itemBuilder: (context, index) {|
+ 625: depth=4 |                    final act = activities[index];|
+ 626: depth=4 |                    final String tName = act['team_name'] ?? 'Neznámý tým';|
+ 627: depth=4 |                    final String runnerName = act['runner_name'] ?? 'Anonymní běžec';|
+ 628: depth=4 |                    final double kmValue = (act['km'] as num).toDouble();|
+ 629: depth=4 |                    |
+ 630: depth=4 |                    final avatarColor = tName.hashCode % 2 == 0 ? Colors.blue : Colors.green;|
+ 631: depth=4 ||
+ 632: depth=4 |                    final String startAtRaw = act['start_time'] ?? act['created_at'] ?? '';|
+ 633: depth=4 |                    String timeStr = '--:--';|
+ 634: depth=5 |                    if (startAtRaw.isNotEmpty) {|
+ 635: depth=5 |                      final localTime = DateTime.parse(startAtRaw).toLocal();|
+ 636: depth=5 |                      timeStr = '${localTime.hour.toString().padLeft(2, '0')}:${localTime.minute.toString().padLeft(2, '0')}';|
+ 637: depth=4 |                    }|
+ 638: depth=4 ||
+ 639: depth=4 |                    return Card(|
+ 640: depth=4 |                      margin: const EdgeInsets.symmetric(vertical: 6),|
+ 641: depth=4 |                      child: ListTile(|
+ 642: depth=4 |                        leading: CircleAvatar(|
+ 643: depth=4 |                          backgroundColor: avatarColor.withValues(alpha: 0.15),|
+ 644: depth=4 |                          child: Icon(Icons.directions_run, color: avatarColor),|
+ 645: depth=4 |                        ),|
+ 646: depth=4 |                        title: Text(|
+ 647: depth=4 |                          runnerName,|
+ 648: depth=4 |                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),|
+ 649: depth=4 |                        ),|
+ 650: depth=4 |                        subtitle: Text('Tým: $tName • Dnes v $timeStr', style: TextStyle(color: Colors.grey[600])),|
+ 651: depth=4 |                        trailing: Text(|
+ 652: depth=4 |                          '+${kmValue.toStringAsFixed(1)} km',|
+ 653: depth=4 |                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: avatarColor),|
+ 654: depth=4 |                        ),|
+ 655: depth=4 |                      ),|
+ 656: depth=4 |                    );|
+ 657: depth=3 |                  },|
+ 658: depth=3 |                );|
+ 659: depth=2 |              },|
+ 660: depth=2 |            ),|
+ 661: depth=2 |          ],|
+ 662: depth=2 |        ),|
+ 663: depth=2 |      ),|
+ 664: depth=2 |    ),|
+ 665: depth=2 |  );|
+ 666: depth=1 |}|
+ 667: depth=1 ||
+ 668: depth=2 |class ChallengesScreen extends StatefulWidget {|
+ 669: depth=2 |  const ChallengesScreen({super.key});|
+ 670: depth=2 ||
+ 671: depth=2 |  @override|
+ 672: depth=2 |  State<ChallengesScreen> createState() => _ChallengesScreenState();|
+ 673: depth=1 |}|
+ 674: depth=1 ||
+ 675: depth=2 |class _ChallengesScreenState extends State<ChallengesScreen> {|
+ 676: depth=2 |  final _supabase = Supabase.instance.client;|
+ 677: depth=2 |  bool _isLoading = true;|
+ 678: depth=2 |  List<Map<String, dynamic>> _challenges = [];|
+ 679: depth=2 |  List<Map<String, dynamic>> _teams = [];|
+ 680: depth=2 ||
+ 681: depth=2 |  @override|
+ 682: depth=3 |  void initState() {|
+ 683: depth=3 |    super.initState();|
+ 684: depth=3 |    _loadData();|
+ 685: depth=2 |  }|
+ 686: depth=2 ||
+ 687: depth=3 |  Future<void> _loadData() async {|
+ 688: depth=4 |    try {|
+ 689: depth=4 |      final challenges = await _supabase.from('challenges').select().order('start_date', ascending: true);|
+ 690: depth=4 |      final teams = await _supabase.from('teams').select().order('id', ascending: true);|
+ 691: depth=5 |      setState(() {|
+FINAL DEPTH=1

@@ -1,0 +1,126 @@
+Analyzing main.dart...                                          
+
+  error - The name 'ChallengesScreen' isn't a class. Try correcting the name to match an existing class - lib\main.dart:46:75 - creation_with_non_type
+  error - The name 'TeamsScreen' isn't a class. Try correcting the name to match an existing class - lib\main.dart:49:75 - creation_with_non_type
+  error - The name 'SettingsScreen' isn't a class. Try correcting the name to match an existing class - lib\main.dart:52:75 - creation_with_non_type
+warning - The declaration '_signOut' isn't referenced. Try removing the declaration of '_signOut' - lib\main.dart:499:8 - unused_element
+  error - Classes can't be declared inside other classes. Try moving the class to the top-level - lib\main.dart:668:1 - class_in_class
+  error - Expected a class member. Try placing this code inside a class member - lib\main.dart:668:24 - expected_class_member
+   info - Missing type annotation. Try adding a type annotation - lib\main.dart:668:32 - strict_top_level_inference
+   info - The variable name 'StatefulWidget' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\main.dart:668:32 - non_constant_identifier_names
+  error - Methods must have an explicit list of parameters. Try adding a parameter list - lib\main.dart:668:32 - missing_method_parameters
+  error - The name 'ChallengesScreen' isn't a class. Try correcting the name to match an existing class - lib\main.dart:669:9 - creation_with_non_type
+  error - The getter 'key' isn't defined in a superclass of '_ChallengeDashboardState'. Try correcting the name to the name of an existing getter, or defining a getter or field named 'key' in a superclass - lib\main.dart:669:33 - undefined_super_member
+warning - The annotation 'override' can only be used on fields, getters, methods, or setters - lib\main.dart:671:4 - invalid_annotation_target
+  error - Undefined class 'State'. Try changing the name to the name of an existing class, or creating a class with the name 'State' - lib\main.dart:672:3 - undefined_class
+  error - The name 'ChallengesScreen' isn't a type, so it can't be used as a type argument. Try correcting the name to an existing type, or defining a type named 'ChallengesScreen' - lib\main.dart:672:9 - non_type_as_type_argument
+warning - The declaration 'createState' isn't referenced. Try removing the declaration of 'createState' - lib\main.dart:672:27 - unused_element
+  error - The method '_ChallengesScreenState' isn't defined for the type '_ChallengeDashboardState'. Try correcting the name to the name of an existing method, or defining a method named '_ChallengesScreenState' - lib\main.dart:672:44 - undefined_method
+  error - Classes can't be declared inside other classes. Try moving the class to the top-level - lib\main.dart:675:1 - class_in_class
+  error - Expected a class member. Try placing this code inside a class member - lib\main.dart:675:30 - expected_class_member
+   info - Missing type annotation. Try adding a type annotation - lib\main.dart:675:38 - strict_top_level_inference
+   info - The variable name 'State' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\main.dart:675:38 - non_constant_identifier_names
+  error - Methods must have an explicit list of parameters. Try adding a parameter list - lib\main.dart:675:38 - missing_method_parameters
+   info - The local variable '_supabase' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:676:9 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_isLoading' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:677:8 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_challenges' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:678:30 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_teams' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:679:30 - no_leading_underscores_for_local_identifiers
+warning - The annotation 'override' can only be used on fields, getters, methods, or setters - lib\main.dart:681:4 - invalid_annotation_target
+warning - The declaration 'initState' isn't referenced. Try removing the declaration of 'initState' - lib\main.dart:682:8 - unused_element
+  error - Local variable '_loadData' can't be referenced before it is declared. Try moving the declaration to before the first use, or renaming the local variable so that it doesn't hide a name from an enclosing scope - lib\main.dart:684:5 - referenced_before_declaration
+   info - The local variable '_loadData' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:687:16 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_isActiveChallenge' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:704:8 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_isEndedChallenge' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:714:8 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_showCreateChallengeDialog' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:722:16 - no_leading_underscores_for_local_identifiers
+  error - The property 'day' can't be unconditionally accessed because the receiver can be 'null'. Try making the access conditional (using '?.') or adding a null check to the target ('!') - lib\main.dart:756:46 - unchecked_use_of_nullable_value
+  error - The property 'month' can't be unconditionally accessed because the receiver can be 'null'. Try making the access conditional (using '?.') or adding a null check to the target ('!') - lib\main.dart:756:90 - unchecked_use_of_nullable_value
+  error - The property 'year' can't be unconditionally accessed because the receiver can be 'null'. Try making the access conditional (using '?.') or adding a null check to the target ('!') - lib\main.dart:756:136 - unchecked_use_of_nullable_value
+  error - The method 'toUtc' can't be unconditionally invoked because the receiver can be 'null'. Try making the call conditional (using '?.') or adding a null check to the target ('!') - lib\main.dart:833:49 - unchecked_use_of_nullable_value
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\main.dart:838:37 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\main.dart:842:44 - use_build_context_synchronously
+   info - The local variable '_formatDate' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:857:10 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_buildChallengeList' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:863:10 - no_leading_underscores_for_local_identifiers
+warning - The annotation 'override' can only be used on fields, getters, methods, or setters - lib\main.dart:892:4 - invalid_annotation_target
+warning - The declaration 'build' isn't referenced. Try removing the declaration of 'build' - lib\main.dart:893:10 - unused_element
+   info - The 'child' argument should be last in widget constructor invocations. Try moving the argument to the end of the argument list - lib\main.dart:919:11 - sort_child_properties_last
+  error - Classes can't be declared inside other classes. Try moving the class to the top-level - lib\main.dart:927:1 - class_in_class
+  error - Expected a class member. Try placing this code inside a class member - lib\main.dart:927:19 - expected_class_member
+   info - Missing type annotation. Try adding a type annotation - lib\main.dart:927:27 - strict_top_level_inference
+   info - The variable name 'StatefulWidget' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\main.dart:927:27 - non_constant_identifier_names
+  error - Methods must have an explicit list of parameters. Try adding a parameter list - lib\main.dart:927:27 - missing_method_parameters
+  error - The name 'StatefulWidget' is already defined. Try renaming one of the declarations - lib\main.dart:927:27 - duplicate_definition
+  error - The name 'TeamsScreen' isn't a class. Try correcting the name to match an existing class - lib\main.dart:928:9 - creation_with_non_type
+  error - The getter 'key' isn't defined in a superclass of '_ChallengeDashboardState'. Try correcting the name to the name of an existing getter, or defining a getter or field named 'key' in a superclass - lib\main.dart:928:28 - undefined_super_member
+warning - The annotation 'override' can only be used on fields, getters, methods, or setters - lib\main.dart:930:4 - invalid_annotation_target
+  error - Undefined class 'State'. Try changing the name to the name of an existing class, or creating a class with the name 'State' - lib\main.dart:931:3 - undefined_class
+  error - The name 'TeamsScreen' isn't a type, so it can't be used as a type argument. Try correcting the name to an existing type, or defining a type named 'TeamsScreen' - lib\main.dart:931:9 - non_type_as_type_argument
+warning - The declaration 'createState' isn't referenced. Try removing the declaration of 'createState' - lib\main.dart:931:22 - unused_element
+  error - The method '_TeamsScreenState' isn't defined for the type '_ChallengeDashboardState'. Try correcting the name to the name of an existing method, or defining a method named '_TeamsScreenState' - lib\main.dart:931:39 - undefined_method
+  error - Classes can't be declared inside other classes. Try moving the class to the top-level - lib\main.dart:934:1 - class_in_class
+  error - Expected a class member. Try placing this code inside a class member - lib\main.dart:934:25 - expected_class_member
+   info - Missing type annotation. Try adding a type annotation - lib\main.dart:934:33 - strict_top_level_inference
+   info - The variable name 'State' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\main.dart:934:33 - non_constant_identifier_names
+  error - Methods must have an explicit list of parameters. Try adding a parameter list - lib\main.dart:934:33 - missing_method_parameters
+  error - The name 'State' is already defined. Try renaming one of the declarations - lib\main.dart:934:33 - duplicate_definition
+   info - The local variable '_supabase' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:935:9 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_isLoading' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:936:8 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_teams' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:937:30 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_teamNameController' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:938:31 - no_leading_underscores_for_local_identifiers
+warning - The annotation 'override' can only be used on fields, getters, methods, or setters - lib\main.dart:940:4 - invalid_annotation_target
+warning - The declaration 'initState' isn't referenced. Try removing the declaration of 'initState' - lib\main.dart:941:8 - unused_element
+  error - Local variable '_loadTeams' can't be referenced before it is declared. Try moving the declaration to before the first use, or renaming the local variable so that it doesn't hide a name from an enclosing scope - lib\main.dart:943:5 - referenced_before_declaration
+warning - The annotation 'override' can only be used on fields, getters, methods, or setters - lib\main.dart:946:4 - invalid_annotation_target
+warning - The declaration 'dispose' isn't referenced. Try removing the declaration of 'dispose' - lib\main.dart:947:8 - unused_element
+   info - The local variable '_loadTeams' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:952:16 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_showCreateTeamDialog' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:967:16 - no_leading_underscores_for_local_identifiers
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\main.dart:989:33 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\main.dart:993:40 - use_build_context_synchronously
+warning - The annotation 'override' can only be used on fields, getters, methods, or setters - lib\main.dart:1004:4 - invalid_annotation_target
+warning - The declaration 'build' isn't referenced. Try removing the declaration of 'build' - lib\main.dart:1005:10 - unused_element
+   info - The 'child' argument should be last in widget constructor invocations. Try moving the argument to the end of the argument list - lib\main.dart:1037:9 - sort_child_properties_last
+  error - Classes can't be declared inside other classes. Try moving the class to the top-level - lib\main.dart:1044:1 - class_in_class
+  error - Expected a class member. Try placing this code inside a class member - lib\main.dart:1044:22 - expected_class_member
+   info - Missing type annotation. Try adding a type annotation - lib\main.dart:1044:30 - strict_top_level_inference
+   info - The variable name 'StatefulWidget' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\main.dart:1044:30 - non_constant_identifier_names
+  error - Methods must have an explicit list of parameters. Try adding a parameter list - lib\main.dart:1044:30 - missing_method_parameters
+  error - The name 'StatefulWidget' is already defined. Try renaming one of the declarations - lib\main.dart:1044:30 - duplicate_definition
+  error - The name 'SettingsScreen' isn't a class. Try correcting the name to match an existing class - lib\main.dart:1045:9 - creation_with_non_type
+  error - The getter 'key' isn't defined in a superclass of '_ChallengeDashboardState'. Try correcting the name to the name of an existing getter, or defining a getter or field named 'key' in a superclass - lib\main.dart:1045:31 - undefined_super_member
+warning - The annotation 'override' can only be used on fields, getters, methods, or setters - lib\main.dart:1047:4 - invalid_annotation_target
+  error - Undefined class 'State'. Try changing the name to the name of an existing class, or creating a class with the name 'State' - lib\main.dart:1048:3 - undefined_class
+  error - The name 'SettingsScreen' isn't a type, so it can't be used as a type argument. Try correcting the name to an existing type, or defining a type named 'SettingsScreen' - lib\main.dart:1048:9 - non_type_as_type_argument
+warning - The declaration 'createState' isn't referenced. Try removing the declaration of 'createState' - lib\main.dart:1048:25 - unused_element
+  error - The method '_SettingsScreenState' isn't defined for the type '_ChallengeDashboardState'. Try correcting the name to the name of an existing method, or defining a method named '_SettingsScreenState' - lib\main.dart:1048:42 - undefined_method
+  error - Classes can't be declared inside other classes. Try moving the class to the top-level - lib\main.dart:1051:1 - class_in_class
+  error - Expected a class member. Try placing this code inside a class member - lib\main.dart:1051:28 - expected_class_member
+   info - Missing type annotation. Try adding a type annotation - lib\main.dart:1051:36 - strict_top_level_inference
+   info - The variable name 'State' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\main.dart:1051:36 - non_constant_identifier_names
+  error - Methods must have an explicit list of parameters. Try adding a parameter list - lib\main.dart:1051:36 - missing_method_parameters
+  error - The name 'State' is already defined. Try renaming one of the declarations - lib\main.dart:1051:36 - duplicate_definition
+   info - The local variable '_supabase' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:1052:9 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_nameController' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:1053:31 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_email' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:1054:10 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_isLoading' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:1055:8 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_activities' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:1056:30 - no_leading_underscores_for_local_identifiers
+warning - The annotation 'override' can only be used on fields, getters, methods, or setters - lib\main.dart:1058:4 - invalid_annotation_target
+warning - The declaration 'initState' isn't referenced. Try removing the declaration of 'initState' - lib\main.dart:1059:8 - unused_element
+  error - Local variable '_loadUserData' can't be referenced before it is declared. Try moving the declaration to before the first use, or renaming the local variable so that it doesn't hide a name from an enclosing scope - lib\main.dart:1061:5 - referenced_before_declaration
+warning - The annotation 'override' can only be used on fields, getters, methods, or setters - lib\main.dart:1064:4 - invalid_annotation_target
+warning - The declaration 'dispose' isn't referenced. Try removing the declaration of 'dispose' - lib\main.dart:1065:8 - unused_element
+   info - The local variable '_loadUserData' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:1070:16 - no_leading_underscores_for_local_identifiers
+   info - The local variable '_saveProfile' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:1097:16 - no_leading_underscores_for_local_identifiers
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check. Guard a 'State.context' use with a 'mounted' check on the State, and other BuildContext use with a 'mounted' check on the BuildContext - lib\main.dart:1104:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check. Guard a 'State.context' use with a 'mounted' check on the State, and other BuildContext use with a 'mounted' check on the BuildContext - lib\main.dart:1109:30 - use_build_context_synchronously
+   info - The local variable '_formatActivityTime' starts with an underscore. Try renaming the variable to not start with an underscore - lib\main.dart:1114:10 - no_leading_underscores_for_local_identifiers
+warning - The annotation 'override' can only be used on fields, getters, methods, or setters - lib\main.dart:1120:4 - invalid_annotation_target
+warning - The declaration 'build' isn't referenced. Try removing the declaration of 'build' - lib\main.dart:1121:10 - unused_element
+  error - Expected to find '}' - lib\main.dart:1215:1 - expected_token
+
+flutter : 115 issues found. (ran in 1.7s)
+At line:1 char:1
++ flutter analyze lib/main.dart 2>&1 | Out-File -FilePath flutter_analy ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (115 issues found. (ran in 1.7s):S 
+   tring) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
