@@ -7,7 +7,7 @@ import 'auth_screen.dart';
 import 'challenges_screen.dart';
 import 'teams_screen.dart';
 
-
+// Třída pro nastavení profilu uživatele
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -15,6 +15,7 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
+// Stavová třída pro nastavení profilu uživatele
 class _SettingsScreenState extends State<SettingsScreen> {
   final _supabase = Supabase.instance.client;
   final _nameController = TextEditingController();
@@ -29,6 +30,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _loadData();
   }
 
+  // Metoda pro načtení dat uživatele a týmů
   Future<void> _loadData() async {
     final user = _supabase.auth.currentUser;
     if (user != null) {
@@ -41,6 +43,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() { _availableTeams = teams; _isLoading = false; });
   }
 
+  // Metoda pro uložení změn v profilu uživatele
   Future<void> _saveProfile() async {
     try {
       final selectedTeam = _availableTeams.firstWhere((t) => t['id'] == _selectedTeamId);
@@ -83,6 +86,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
+// Funkce pro vytvoření menu s možnostmi
 Widget buildAppMenu(BuildContext context) {
   return PopupMenuButton<String>(
     icon: const Icon(Icons.more_vert, color: Colors.white),
@@ -118,4 +122,3 @@ Widget buildAppMenu(BuildContext context) {
     ],
   );
 }
-
