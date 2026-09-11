@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:health/health.dart';
-import 'dart:io' show Platform;
+import 'platform.dart';
 
 class HealthHelper {
   static const MethodChannel _healthChannel = MethodChannel('team_run_challenge/health_connect');
   static final Health _health = Health();
 
-  static String get providerName => Platform.isIOS ? 'Apple Health' : 'Health Connect';
+  static String get providerName => isIOS ? 'Apple Health' : 'Health Connect';
 
   static List<DateTimeRange> extractRunningSessionRanges(List<HealthDataPoint> workoutPoints) {
     final ranges = <DateTimeRange>[];
@@ -46,7 +46,7 @@ class HealthHelper {
   }
 
   static Future<List<DateTimeRange>> loadRunningSessionsFromNative(DateTime start, DateTime end) async {
-    if (!Platform.isAndroid) return const <DateTimeRange>[];
+    if (!isAndroid) return const <DateTimeRange>[];
     debugPrint('HealthHelper: loadRunningSessionsFromNative start=${start.toIso8601String()} end=${end.toIso8601String()}');
     final response = await _healthChannel.invokeMethod<Map<dynamic, dynamic>>(
       'getRunningSessionsInRange',
@@ -72,10 +72,10 @@ class HealthHelper {
   }
 
   static Future<bool> checkHealthConnectAvailability() async {
-    if (Platform.isIOS) {
+    if (isIOS) {
       return true;
     }
-    if (!Platform.isAndroid) return false;
+    if (!isAndroid) return false;
     try {
       final status = await _healthChannel.invokeMethod<String>('checkHealthConnectAvailability');
       debugPrint('HealthHelper: availability status=$status');
@@ -88,10 +88,10 @@ class HealthHelper {
   }
 
   static Future<bool> requestDistanceAccess() async {
-    if (Platform.isIOS) {
+    if (isIOS) {
       return _requestHealthKitDistanceAccess();
     }
-    if (!Platform.isAndroid) return false;
+    if (!isAndroid) return false;
     try {
       final bool hasNative = await _healthChannel.invokeMethod<bool>('requestDistanceAccess') ?? false;
       debugPrint('HealthHelper: native permission result=$hasNative');
@@ -166,7 +166,7 @@ class HealthHelper {
   }) async {
     if (!await requestDistanceAccess()) {
       throw Exception(
-        Platform.isIOS
+        isIOS
             ? 'Apple Health nepovolil čtení vzdálenosti nebo historie aktivit.'
             : 'Health Connect nepovolil čtení vzdálenosti nebo historických dat.',
       );
