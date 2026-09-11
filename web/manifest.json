@@ -8,6 +8,20 @@
     "description": "A new Flutter project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
+    "shortcuts": [
+        {
+            "name": "Team Run Challenge",
+            "short_name": "Team Run",
+            "url": ".",
+            "icons": [
+                {
+                    "src": "icons/Icon-192.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ]
+        }
+    ],
     "icons": [
         {
             "src": "icons/Icon-192.png",
