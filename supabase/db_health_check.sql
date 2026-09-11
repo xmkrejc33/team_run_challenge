@@ -116,3 +116,28 @@ select
   count(*) filter (where end_time is null) as missing_end_time,
   count(*) filter (where km is null or km <= 0) as missing_or_zero_km
 from public.activities;
+
+-- 10) Exact live relation and column types used by the mobile API.
+select
+  to_regclass('public.activities') as relation_name,
+  c.relkind,
+  c.relrowsecurity as rls_enabled
+from pg_class c
+where c.oid = 'public.activities'::regclass;
+
+select
+  a.attname as column_name,
+  format_type(a.atttypid, a.atttypmod) as actual_type,
+  not a.attnotnull as is_nullable,
+  pg_get_expr(d.adbin, d.adrelid) as default_value
+from pg_attribute a
+left join pg_attrdef d on d.adrelid = a.attrelid and d.adnum = a.attnum
+where a.attrelid = 'public.activities'::regclass
+  and a.attnum > 0
+  and not a.attisdropped
+order by a.attnum;
+
+select
+  has_table_privilege('authenticated', 'public.activities', 'select') as authenticated_can_select,
+  has_table_privilege('authenticated', 'public.activities', 'insert') as authenticated_can_insert,
+  has_schema_privilege('authenticated', 'public', 'usage') as authenticated_schema_usage;

@@ -26,6 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Aplikace načítá běžecké aktivity a vzdálenost z Apple Health pro týmovou výzvu.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Aplikace potřebuje přístup k Apple Health pro synchronizaci vašich běžeckých aktivit.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

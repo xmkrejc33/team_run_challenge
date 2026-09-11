@@ -8,6 +8,7 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.health.connect.client.permission.HealthPermission
@@ -34,11 +35,14 @@ class MainActivity : FlutterFragmentActivity() {
             val hasExerciseRead = grantedPermissions.contains(
                 HealthPermission.getReadPermission(ExerciseSessionRecord::class)
             )
+            val hasHistoryRead = grantedPermissions.contains(
+                "android.permission.health.READ_HEALTH_DATA_HISTORY"
+            )
             Log.d(
                 "HealthConnect",
-                "Permission result received. Granted=$grantedPermissions hasDistanceRead=$hasDistanceRead hasExerciseRead=$hasExerciseRead",
+                "Permission result received. Granted=$grantedPermissions hasDistanceRead=$hasDistanceRead hasExerciseRead=$hasExerciseRead hasHistoryRead=$hasHistoryRead",
             )
-            pendingResult?.success(hasDistanceRead && hasExerciseRead)
+            pendingResult?.success(hasDistanceRead && hasExerciseRead && hasHistoryRead)
             pendingResult = null
         }
     }
@@ -48,24 +52,52 @@ class MainActivity : FlutterFragmentActivity() {
 
         methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "team_run_challenge/health_connect")
         methodChannel.setMethodCallHandler { call, result ->
+            Log.d("HealthConnect", "Method called: ${call.method} args=${call.arguments}")
             when (call.method) {
                 "checkHealthConnectAvailability" -> {
-                    val status = HealthConnectClient.getSdkStatus(applicationContext)
-                    Log.d("HealthConnect", "SDK status = $status")
-                    result.success(status == HealthConnectClient.SDK_AVAILABLE)
+                    try {
+                        val status = HealthConnectClient.getSdkStatus(applicationContext)
+                        Log.d("HealthConnect", "SDK status = $status")
+                        val isAvailable = status == HealthConnectClient.SDK_AVAILABLE ||
+                            status == HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED
+                        val response = if (isAvailable) "AVAILABLE" else "UNAVAILABLE"
+                        Log.d("HealthConnect", "Availability response = $response")
+                        result.success(response)
+                    } catch (e: Exception) {
+                        Log.e("HealthConnect", "Availability check failed", e)
+                        result.success("UNAVAILABLE")
+                    }
                 }
                 "requestDistanceAccess" -> {
                     Log.d("HealthConnect", "Launching permission request")
+                    try {
+                        val status = HealthConnectClient.getSdkStatus(applicationContext)
+                        Log.d("HealthConnect", "Permission status before launch = $status")
+                        if (status == HealthConnectClient.SDK_UNAVAILABLE) {
+                            Log.w("HealthConnect", "Health Connect unavailable, permission request aborted")
+                            result.success(false)
+                            return@setMethodCallHandler
+                        }
+                    } catch (e: Exception) {
+                        Log.e("HealthConnect", "Health Connect status check failed", e)
+                        result.success(false)
+                        return@setMethodCallHandler
+                    }
+
                     pendingResult = result
                     val permissions = setOf(
                         HealthPermission.getReadPermission(DistanceRecord::class),
                         HealthPermission.getReadPermission(ExerciseSessionRecord::class),
+                        HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
+                        "android.permission.health.READ_HEALTH_DATA_HISTORY",
                     )
+                    Log.d("HealthConnect", "Launching request for permissions=$permissions")
                     permissionLauncher.launch(permissions)
                 }
                 "getRunningSessionsInRange" -> {
                     val startMillis = call.argument<Long>("startMillis")
                     val endMillis = call.argument<Long>("endMillis")
+                    Log.d("HealthConnect", "getRunningSessionsInRange startMillis=$startMillis endMillis=$endMillis")
                     if (startMillis == null || endMillis == null) {
                         result.error("bad_args", "Missing startMillis/endMillis", null)
                         return@setMethodCallHandler
@@ -100,6 +132,7 @@ class MainActivity : FlutterFragmentActivity() {
                                 )
                             }
 
+                        Log.d("HealthConnect", "Loaded ${response.records.size} total exercise sessions, ${runningSessions.size} running sessions")
                         result.success(
                             mapOf(
                                 "totalSessions" to response.records.size,
@@ -107,10 +140,14 @@ class MainActivity : FlutterFragmentActivity() {
                             ),
                         )
                     } catch (e: Exception) {
+                        Log.e("HealthConnect", "Failed to load running sessions", e)
                         result.error("read_failed", e.message, null)
                     }
                 }
-                else -> result.notImplemented()
+                else -> {
+                    Log.w("HealthConnect", "Unhandled method call: ${call.method}")
+                    result.notImplemented()
+                }
             }
         }
     }

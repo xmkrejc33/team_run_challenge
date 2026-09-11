@@ -45,6 +45,7 @@ alter table public.challenges
 alter table public.challenges
   add column if not exists team_names text not null default '';
 
+
 create unique index if not exists team_members_team_user_idx
 on public.team_members(team_id, user_id)
 where user_id is not null;
@@ -100,6 +101,22 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.teams TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.challenges TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.team_members TO authenticated;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO authenticated;
+
+-- Profiles are the source of team membership after team_members migration.
+GRANT SELECT ON public.profiles TO authenticated;
+
+DROP POLICY IF EXISTS "profiles read own" ON public.profiles;
+DROP POLICY IF EXISTS "profiles read same team" ON public.profiles;
+DROP POLICY IF EXISTS "profiles read all authenticated" ON public.profiles;
+CREATE POLICY "profiles read all authenticated"
+ON public.profiles
+FOR SELECT
+TO authenticated
+USING (true);
+
+-- Team members may change only the membership-related challenge fields.
+REVOKE UPDATE ON public.challenges FROM authenticated;
+GRANT UPDATE (team_names, is_active) ON public.challenges TO authenticated;
 
 -- teams policies
 CREATE POLICY "teams_select_all"
@@ -192,6 +209,13 @@ USING (
 WITH CHECK (
   originator_id = auth.uid()
 );
+
+CREATE POLICY "challenges_update_team_membership_active"
+ON public.challenges
+FOR UPDATE
+TO authenticated
+USING (is_active = true)
+WITH CHECK (is_active = true);
 
 CREATE POLICY "challenges_delete_originator_active"
 ON public.challenges

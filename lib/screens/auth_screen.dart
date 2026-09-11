@@ -85,18 +85,14 @@ class _AuthScreenState extends State<AuthScreen> {
         final userId = response.user?.id; // Získá ID uživatele
         if (userId != null) { // Pokud je ID uživatele platné
           try {
-            final existing = await _supabase.from('team_members').select('id').eq('team_id', _selectedTeamId as int).eq('user_id', userId).limit(1); // Zjistí, zda již existuje člen týmu s touto ID
-            if ((existing as List).isEmpty) { // Pokud neexistuje
-              await _supabase.from('team_members').insert({ // Přidá nového člena týmu
-                'team_id': _selectedTeamId,
-                'user_id': userId,
-                'runner_name': runnerName,
-              });
-            } else { // Pokud již existuje
-              await _supabase.from('team_members').update({'runner_name': runnerName}).eq('team_id', _selectedTeamId as int).eq('user_id', userId); // Aktualizuje jméno člena týmu
-            }
+            await _supabase.from('profiles').upsert({
+              'user_id': userId,
+              'runner_name': runnerName,
+              'team_id': _selectedTeamId,
+              'team_name': teamName,
+            }, onConflict: 'user_id');
           } catch (e) {
-            debugPrint('team_members při registraci přeskočeno: $e'); // Vypíše chybu
+                debugPrint('profiles při registraci přeskočeno: $e'); // Vypíše chybu
           }
         }
       } else { // Pokud se jedná o přihlášení

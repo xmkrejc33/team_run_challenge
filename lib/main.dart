@@ -5,7 +5,7 @@ import 'screens/dashboard_screen.dart';
 
 const String kSupabaseUrl = 'https://xfnfzgragzlwhefniawp.supabase.co';
 const String kSupabasePublishableKey =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmbmZ6Z3JhZ3psd2hlZm5pYXdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2NDIyNjMsImV4cCI6MjA5ODIxODI2M30.t-5OigDjP6Z0JCD8UneQo_-iyPIq-Z6wkTEOt5XMA4M';
+  'sb_publishable_3BzkICJSF9v52DDBZwPcrg_Zyi_JgJi';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
