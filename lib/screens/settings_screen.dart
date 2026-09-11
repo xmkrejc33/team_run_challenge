@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/supabase_service.dart';
@@ -21,8 +20,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String? _avatarBase64;
   bool _isLoading = true;
   bool _isSavingProfile = false;
-  bool _isCreatingHealthToken = false;
-  String? _healthShortcutToken;
   List<Map<String, dynamic>> _availableTeams = [];
   List<Map<String, dynamic>> _userActivities = [];
   int? _selectedTeamId;
@@ -100,27 +97,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Future<void> _createHealthShortcutToken() async {
-    setState(() => _isCreatingHealthToken = true);
-    try {
-      final token = await SupabaseService.createHealthShortcutToken();
-      if (!mounted) return;
-      setState(() => _healthShortcutToken = token);
-      await Clipboard.setData(ClipboardData(text: token));
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Token vytvořen a zkopírován do schránky.')),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Token se nepodařilo vytvořit: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _isCreatingHealthToken = false);
-    }
-  }
-
   ImageProvider<Object>? _profileImage() {
     final avatar = _avatarBase64?.trim();
     if (avatar == null || avatar.isEmpty) return null;
@@ -180,42 +156,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onPressed: _isSavingProfile ? null : _saveProfile,
             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
             child: const Text('Uložit změny'),
-          ),
-          const SizedBox(height: 20),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Apple Health přes Zkratky', style: Theme.of(context).textTheme.titleMedium),
-                  const SizedBox(height: 8),
-                  const Text('Vytvořte token, vložte ho do sdílené iPhone Zkratky a povolte jí přístup ke Zdraví.'),
-                  const SizedBox(height: 12),
-                  if (_healthShortcutToken != null) ...[
-                    SelectableText(_healthShortcutToken!, style: const TextStyle(fontFamily: 'monospace')),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      onPressed: () async {
-                        final messenger = ScaffoldMessenger.of(context);
-                        await Clipboard.setData(ClipboardData(text: _healthShortcutToken!));
-                        if (!mounted) return;
-                        messenger.showSnackBar(const SnackBar(content: Text('Token zkopírován.')));
-                      },
-                      icon: const Icon(Icons.copy),
-                      label: const Text('Kopírovat token'),
-                    ),
-                  ],
-                  FilledButton.icon(
-                    onPressed: _isCreatingHealthToken ? null : _createHealthShortcutToken,
-                    icon: _isCreatingHealthToken
-                        ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Icon(Icons.key),
-                    label: Text(_healthShortcutToken == null ? 'Vytvořit token' : 'Vytvořit nový token'),
-                  ),
-                ],
-              ),
-            ),
           ),
           const SizedBox(height: 20),
           Align(

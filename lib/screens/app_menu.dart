@@ -4,6 +4,7 @@ import 'dashboard_screen.dart';
 import 'auth_screen.dart';
 import 'challenges_screen.dart';
 import 'settings_screen.dart' as settings_page;
+import 'apple_health_settings_screen.dart';
 import 'teams_screen.dart';
 
 Widget buildBackToDashboardButton(BuildContext context) {
@@ -33,6 +34,9 @@ Widget buildAppMenu(BuildContext context) {
           Navigator.push(context, MaterialPageRoute(builder: (_) => const TeamsScreen()));
           break;
         case 'settings':
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const AppleHealthSettingsScreen()));
+          break;
+        case 'profile':
           Navigator.push(context, MaterialPageRoute(builder: (_) => const settings_page.SettingsScreen()));
           break;
         case 'logout':
@@ -50,7 +54,8 @@ Widget buildAppMenu(BuildContext context) {
     itemBuilder: (context) => const [
       PopupMenuItem(value: 'teams', child: Text('Týmy')),
       PopupMenuItem(value: 'challenges', child: Text('Výzvy')),
-      PopupMenuItem(value: 'settings', child: Text('Profil')),
+      PopupMenuItem(value: 'profile', child: Text('Profil')),
+      PopupMenuItem(value: 'settings', child: Text('Nastavení')),
       PopupMenuItem(value: 'logout', child: Text('Odhlásit se')),
     ],
   );
