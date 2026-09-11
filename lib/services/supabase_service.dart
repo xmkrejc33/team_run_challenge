@@ -18,7 +18,7 @@ class SupabaseService {
     if (user == null) throw Exception('No authenticated user');
 
     final profile = await client.from('profiles').select(
-      'user_id, runner_name, team_id, team_name, avatar_base64',
+      'user_id, runner_name, team_id, team_name, avatar_base64, last_sync_at',
     ).eq('user_id', user.id).maybeSingle();
     if (profile != null) return Map<String, dynamic>.from(profile);
 
@@ -49,6 +49,36 @@ class SupabaseService {
       'avatar_base64': avatarBase64,
       'updated_at': DateTime.now().toUtc().toIso8601String(),
     }, onConflict: 'user_id');
+  }
+
+  static Future<void> saveLastActivitySync(DateTime time) async {
+    final userId = await requireAuthenticatedUserId();
+    await client.from('profiles').update({
+      'last_sync_at': time.toUtc().toIso8601String(),
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+    }).eq('user_id', userId);
+  }
+
+  static Future<DateTime?> loadLastActivityUploadAt({
+    required String runnerName,
+    required String teamName,
+  }) async {
+    final activities = await loadActivitiesSafe(
+      runnerName: runnerName,
+      teamName: teamName,
+      ascending: false,
+    );
+    DateTime? latestUploadAt;
+    for (final activity in activities) {
+      final uploadedAt = DateTime.tryParse(
+        (activity['created_at'] ?? '').toString(),
+      );
+      if (uploadedAt != null &&
+          (latestUploadAt == null || uploadedAt.isAfter(latestUploadAt))) {
+        latestUploadAt = uploadedAt;
+      }
+    }
+    return latestUploadAt;
   }
 
   static Future<void> deleteCurrentUserActivities({
@@ -181,19 +211,19 @@ class SupabaseService {
     final data = await _loadWithFallbacks([
       _FallbackAttempt(
         context: 'activities select failed',
-        load: () => client.from('activities').select('id, team_name, runner_name, km, start_time, end_time'),
+        load: () => client.from('activities').select('id, team_name, runner_name, km, start_time, end_time, created_at'),
       ),
       _FallbackAttempt(
         context: 'activities public REST read failed',
         load: () => fetchPublicRows(
           table: 'activities',
-          select: 'id,team_name,runner_name,km,start_time,end_time',
+          select: 'id,team_name,runner_name,km,start_time,end_time,created_at',
           orderColumn: null,
         ),
       ),
       _FallbackAttempt(
         context: 'activities minimal read failed',
-        load: () => client.from('activities').select('team_name, runner_name, km, start_time, end_time'),
+        load: () => client.from('activities').select('team_name, runner_name, km, start_time, end_time, created_at'),
       ),
     ], 'activities load');
 

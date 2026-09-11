@@ -36,11 +36,7 @@ class _ChallengeDashboardState extends State<ChallengeDashboard> {
   }
 
   Future<void> _initializeDashboard() async {
-    await _loadLastSyncTime(); // Načítá čas poslední synchronizace ze SharedPreferences
-    if (_lastSyncAt == null) {
-      final now = DateTime.now();
-      _lastSyncAt = DateTime(now.year, now.month, now.day);
-    }
+    await _loadLastSyncTime();
     if (!mounted || !widget.syncOnStart) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -124,7 +120,7 @@ class _ChallengeDashboardState extends State<ChallengeDashboard> {
   }
 
   String _formatDateTime(DateTime? dateTime) {
-    return formatDateTimeOrDash(dateTime); // Formátuje datum a čas nebo vrátí "-"
+    return dateTime == null ? 'Zatím neproběhla' : formatDateTimeOrDash(dateTime);
   }
 
   String _formatIsoDateTime(String? iso) {
@@ -177,16 +173,14 @@ class _ChallengeDashboardState extends State<ChallengeDashboard> {
 
   Future<void> _loadLastSyncTime() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final stored = prefs.getString('last_sync_time');
-      if (stored != null) {
-        setState(() {
-          _lastSyncAt = DateTime.tryParse(stored)?.toLocal();
-        });
-        return;
-      }
-
-      return;
+      final profile = await SupabaseService.loadCurrentProfile();
+      final stored = profile['last_sync_at']?.toString();
+      DateTime? lastSyncAt = DateTime.tryParse(stored ?? '')?.toLocal();
+      lastSyncAt ??= (await SupabaseService.loadLastActivityUploadAt(
+        runnerName: (profile['runner_name'] ?? '').toString(),
+        teamName: (profile['team_name'] ?? '').toString(),
+      ))?.toLocal();
+      if (mounted) setState(() => _lastSyncAt = lastSyncAt);
     } catch (e) {
       debugPrint('Chyba načítání poslední synchronizace: $e');
     }
@@ -194,8 +188,7 @@ class _ChallengeDashboardState extends State<ChallengeDashboard> {
 
   Future<void> _saveLastSyncTime(DateTime time) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('last_sync_time', time.toUtc().toIso8601String());
+      await SupabaseService.saveLastActivitySync(time);
     } catch (e) {
       debugPrint('Chyba ukládání poslední synchronizace: $e');
     }
