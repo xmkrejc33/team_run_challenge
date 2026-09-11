@@ -13,6 +13,14 @@ const String kSupabasePublishableKey =
 class SupabaseService {
   static final client = Supabase.instance.client;
 
+  static Future<String> createHealthShortcutToken() async {
+    final response = await client.functions.invoke('create-health-shortcut-token');
+    final data = Map<String, dynamic>.from(response.data as Map);
+    final token = data['token']?.toString() ?? '';
+    if (token.isEmpty) throw Exception(data['error']?.toString() ?? 'Token se nepodařilo vytvořit.');
+    return token;
+  }
+
   static Future<Map<String, dynamic>> loadCurrentProfile() async {
     final user = client.auth.currentUser;
     if (user == null) throw Exception('No authenticated user');
