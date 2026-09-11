@@ -3,14 +3,14 @@ import 'package:flutter/services.dart';
 import '../services/supabase_service.dart';
 import 'app_menu.dart';
 
-class AppleHealthSettingsScreen extends StatefulWidget {
-  const AppleHealthSettingsScreen({super.key});
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
 
   @override
-  State<AppleHealthSettingsScreen> createState() => _AppleHealthSettingsScreenState();
+  State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _AppleHealthSettingsScreenState extends State<AppleHealthSettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen> {
   bool _isCreatingHealthToken = false;
   String? _healthShortcutToken;
 

@@ -4,7 +4,7 @@ import 'dashboard_screen.dart';
 import 'auth_screen.dart';
 import 'challenges_screen.dart';
 import 'profile_screen.dart';
-import 'apple_health_settings_screen.dart';
+import 'settings_screen.dart';
 import 'teams_screen.dart';
 
 Widget buildBackToDashboardButton(BuildContext context) {
@@ -34,7 +34,7 @@ Widget buildAppMenu(BuildContext context) {
           Navigator.push(context, MaterialPageRoute(builder: (_) => const TeamsScreen()));
           break;
         case 'settings':
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const AppleHealthSettingsScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
           break;
         case 'profile':
           Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
