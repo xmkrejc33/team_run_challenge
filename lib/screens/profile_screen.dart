@@ -6,14 +6,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/supabase_service.dart';
 import 'app_menu.dart';
 
-class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _ProfileScreenState extends State<ProfileScreen> {
   final _supabase = Supabase.instance.client;
   final _imagePicker = ImagePicker();
   final TextEditingController _nameController = TextEditingController();
@@ -73,7 +73,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profil uložen.')));
       }
     } catch (e) { debugPrint(e.toString()); }
-    setState(() => _isSavingProfile = false);
+    if (mounted) setState(() => _isSavingProfile = false);
   }
 
   Future<void> _pickProfileImage() async {
@@ -207,6 +207,4 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (parsed == null) return 'Neznámé datum';
     return '${parsed.day.toString().padLeft(2, '0')}.${parsed.month.toString().padLeft(2, '0')}.${parsed.year} ${parsed.hour.toString().padLeft(2, '0')}:${parsed.minute.toString().padLeft(2, '0')}';
   }
-
 }
-

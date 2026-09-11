@@ -3,7 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dashboard_screen.dart';
 import 'auth_screen.dart';
 import 'challenges_screen.dart';
-import 'settings_screen.dart' as settings_page;
+import 'profile_screen.dart';
 import 'apple_health_settings_screen.dart';
 import 'teams_screen.dart';
 
@@ -37,7 +37,7 @@ Widget buildAppMenu(BuildContext context) {
           Navigator.push(context, MaterialPageRoute(builder: (_) => const AppleHealthSettingsScreen()));
           break;
         case 'profile':
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const settings_page.SettingsScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
           break;
         case 'logout':
           await supabase.auth.signOut();
