@@ -28,13 +28,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
       final challengeList = await SupabaseService.loadChallengesSafe(ascending: true);
       final activities = await SupabaseService.loadActivitiesSafe(ascending: false);
       final teamKmByChallenge = _buildChallengeTeamKmMap(challengeList, activities);
-      final completedMap = {
-        for (final challenge in challengeList)
-          challenge['id'] as int: teamKmByChallenge[challenge['id'] as int]!.values.any(
-            (km) => km >= ((challenge['distance'] as num?)?.toDouble() ?? 0.0),
-          ),
-      };
-      await _syncChallengeStatus(challengeList, completedMap);
+      await _syncChallengeStatus(challengeList, activities);
 
       setState(() {
         _challenges = challengeList;
@@ -70,6 +64,13 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
   }
 
   String _winnerLabel(Map<String, dynamic> challenge) {
+    final storedWinner = (challenge['winner_team'] ?? '').toString().trim();
+    if (storedWinner.isNotEmpty) {
+      final winnerName = parseCsvLabels(challenge['team_names']?.toString() ?? '')
+          .firstWhere((label) => label.toLowerCase() == storedWinner.toLowerCase(), orElse: () => storedWinner);
+      return 'Vítězný tým: $winnerName';
+    }
+
     final teamKm = _challengeTeamKm[challenge['id'] as int] ?? {};
     if (teamKm.isEmpty) return 'Vítězný tým: zatím bez aktivit';
 
@@ -87,17 +88,60 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
         : 'Remíza: $winnerNames (${highestKm.toStringAsFixed(1)} km)';
   }
 
-  Future<void> _syncChallengeStatus(List<Map<String, dynamic>> challenges, Map<int, bool> completed) async {
+  Future<void> _syncChallengeStatus(
+    List<Map<String, dynamic>> challenges,
+    List<Map<String, dynamic>> activities,
+  ) async {
     if (_supabase.auth.currentUser == null) return;
 
     for (var c in challenges) {
       final id = c['id'] as int;
-      final isActive = !(completed[id] ?? false);
-      if (c['is_active'] != isActive) {
-        await _supabase.from('challenges').update({'is_active': isActive}).eq('id', id);
-        c['is_active'] = isActive;
+      if (c['is_active'] != true && c['end_date'] != null && c['winner_team'] != null) continue;
+
+      final completion = _findCompletion(c, activities);
+      if (completion == null) continue;
+
+      await _supabase.from('challenges').update({
+        'is_active': false,
+        'end_date': completion.endDate.toUtc().toIso8601String(),
+        'winner_team': completion.winnerTeam,
+      }).eq('id', id);
+      c
+        ..['is_active'] = false
+        ..['end_date'] = completion.endDate.toUtc().toIso8601String()
+        ..['winner_team'] = completion.winnerTeam;
+    }
+  }
+
+  _ChallengeCompletion? _findCompletion(
+    Map<String, dynamic> challenge,
+    List<Map<String, dynamic>> activities,
+  ) {
+    final start = DateTime.tryParse((challenge['start_date'] ?? '').toString())?.toLocal();
+    final target = (challenge['distance'] as num?)?.toDouble() ?? 0.0;
+    final teams = parseCsvLowerSet(challenge['team_names'] ?? '');
+    final totals = {for (final team in teams) team: 0.0};
+    final relevantActivities = activities.where((activity) {
+      final team = (activity['team_name'] ?? '').toString().trim().toLowerCase();
+      final time = DateTime.tryParse((activity['start_time'] ?? activity['created_at'] ?? '').toString())?.toLocal();
+      return teams.contains(team) && (start == null || time == null || !time.isBefore(start));
+    }).toList()
+      ..sort((left, right) {
+        final leftTime = DateTime.tryParse((left['start_time'] ?? left['created_at'] ?? '').toString());
+        final rightTime = DateTime.tryParse((right['start_time'] ?? right['created_at'] ?? '').toString());
+        return (leftTime ?? DateTime.fromMillisecondsSinceEpoch(0)).compareTo(rightTime ?? DateTime.fromMillisecondsSinceEpoch(0));
+      });
+
+    for (final activity in relevantActivities) {
+      final team = (activity['team_name'] ?? '').toString().trim().toLowerCase();
+      totals[team] = (totals[team] ?? 0.0) + (activity['km'] as num).toDouble();
+      if (totals[team]! >= target) {
+        final completionValue = activity['end_time'] ?? activity['start_time'] ?? activity['created_at'];
+        final endDate = DateTime.tryParse(completionValue.toString())?.toLocal() ?? DateTime.now();
+        return _ChallengeCompletion(team, endDate);
       }
     }
+    return null;
   }
 
   Future<void> _showCreateDialog() async {
@@ -198,8 +242,10 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                   'distance': distance,
                   'team_names': teamName,
                   'is_active': true,
+                  'end_date': null,
+                  'winner_team': null,
                   'originator_id': userId,
-                }).select('id, name, start_date, distance, team_names, is_active, originator_id').single();
+                }).select('id, name, start_date, end_date, distance, team_names, winner_team, is_active, originator_id').single();
                 logCreateStep('insert_response_received', 'keys=${inserted.keys.toList()}');
                 if (dialogOpen && context.mounted) {
                   logCreateStep('dialog_close_success');
@@ -355,6 +401,7 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
     final subtitle = [
       'Start: ${formatDateTimeOrDash(DateTime.tryParse((challenge['start_date'] ?? '').toString())?.toLocal(), includeTime: false)}',
       'Týmy: ${challenge['team_names']}',
+      if (!isActive) 'Konec: ${formatDateTimeOrDash(DateTime.tryParse((challenge['end_date'] ?? '').toString())?.toLocal(), includeTime: false)}',
       if (!isActive) _winnerLabel(challenge),
     ].join('\n');
     return Card(
@@ -444,4 +491,11 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
       ),
     );
   }
+}
+
+class _ChallengeCompletion {
+  const _ChallengeCompletion(this.winnerTeam, this.endDate);
+
+  final String winnerTeam;
+  final DateTime endDate;
 }

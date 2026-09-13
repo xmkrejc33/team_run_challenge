@@ -33,7 +33,7 @@ select
   case when c.column_name is null then 'MISSING' else 'OK' end as status,
   c.data_type
 from (
-  values ('id'), ('name'), ('start_date'), ('distance'), ('team_names'), ('is_active'), ('originator_id')
+  values ('id'), ('name'), ('start_date'), ('end_date'), ('distance'), ('team_names'), ('winner_team'), ('is_active'), ('originator_id')
 ) as req(column_name)
 left join information_schema.columns c
   on c.table_schema = 'public'

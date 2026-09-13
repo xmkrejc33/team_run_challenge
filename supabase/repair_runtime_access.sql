@@ -24,6 +24,8 @@ create table if not exists public.challenges (
   distance double precision not null,
   team_names text not null default '',
   is_active boolean not null default true,
+  end_date timestamptz,
+  winner_team text,
   originator_id uuid references auth.users(id) on delete set null
 );
 
@@ -40,6 +42,8 @@ create table if not exists public.activities (
 -- Ensure required columns exist even in partially migrated databases.
 alter table public.challenges add column if not exists team_names text not null default '';
 alter table public.challenges add column if not exists is_active boolean not null default true;
+alter table public.challenges add column if not exists end_date timestamptz;
+alter table public.challenges add column if not exists winner_team text;
 alter table public.challenges add column if not exists originator_id uuid references auth.users(id) on delete set null;
 alter table public.activities add column if not exists team_name text;
 alter table public.activities add column if not exists runner_name text;

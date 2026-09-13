@@ -1,4 +1,4 @@
 import 'dart:io';
 
-const bool isAndroid = Platform.isAndroid;
-const bool isIOS = Platform.isIOS;
+final bool isAndroid = Platform.isAndroid;
+final bool isIOS = Platform.isIOS;

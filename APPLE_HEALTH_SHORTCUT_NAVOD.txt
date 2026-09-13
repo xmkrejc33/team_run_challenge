@@ -1,0 +1,384 @@
+NÁVOD: APPLE HEALTH ZKRATKA PRO TEAM RUN CHALLENGE
+====================================================
+
+Tento návod popisuje vytvoření iPhone Zkratky, která:
+
+1. najde poslední běžecký trénink v Apple Health,
+2. získá jeho vzdálenost, začátek a konec,
+3. odešle data do Team Run Challenge,
+4. zobrazí výsledek importu,
+5. otevře webovou aplikaci.
+
+Zkratku je potřeba vytvořit nebo upravit na iPhonu. Apple Zkratky nemají plnohodnotný editor pro Windows.
+
+PŘEDPOKLADY
+-----------
+
+Potřebujete:
+
+- iPhone s aplikací Zkratky,
+- běžecký trénink uložený v aplikaci Zdraví / Apple Health,
+- osobní token vytvořený ve webové aplikaci,
+- adresu Edge Function:
+
+  https://xfnfzgragzlwhefniawp.supabase.co/functions/v1/import-health-shortcut
+
+- adresu webové aplikace:
+
+  https://xmkrejc33.github.io/team_run_challenge/
+
+Každý uživatel musí mít vlastní token. Token není možné sdílet mezi uživateli, protože určuje, do kterého profilu a týmu se aktivita uloží.
+
+1. VYTVOŘENÍ TOKENU VE WEBOVÉ APLIKACI
+---------------------------------------
+
+1. Otevřete webovou aplikaci:
+
+   https://xmkrejc33.github.io/team_run_challenge/
+
+2. Přihlaste se.
+3. Otevřete menu aplikace.
+4. Vyberte položku Nastavení.
+5. V části Apple Health přes Zkratky klepněte na Vytvořit token.
+6. Token se zobrazí a automaticky zkopíruje do schránky.
+7. Token si do Zkratky vložte jako text.
+
+Pokud vytvoříte nový token, předchozí token přestane fungovat.
+
+2. VYTVOŘENÍ NOVÉ ZKRATKY
+-------------------------
+
+1. Otevřete na iPhonu aplikaci Zkratky.
+2. Klepněte na plus (+) pro vytvoření nové zkratky.
+3. Název zkratky nastavte například na:
+
+   Odeslat běh do Team Run Challenge
+
+4. Klepněte na Přidat akci.
+
+3. AKCE: NAJÍT POSLEDNÍ BĚH V APPLE HEALTH
+-------------------------------------------
+
+Přidejte akci:
+
+   Najít vzorky zdraví
+
+V některých verzích iOS se může jmenovat podobně jako:
+
+   Najít všechna cvičení
+   Find Health Samples
+
+Nastavte ji takto:
+
+- typ vzorku: Cvičení / Workouts,
+- filtr typu cvičení: Běh / Running,
+- řazení: Datum začátku,
+- směr řazení: sestupně / nejnovější první,
+- limit výsledků: 1.
+
+Výsledkem má být poslední běžecký trénink.
+
+4. KONTROLA, ZDA BYL BĚH NALEZEN
+--------------------------------
+
+Přidejte akci:
+
+   Pokud
+
+Nastavte podmínku tak, aby kontrolovala, zda počet nalezených vzorků je 0.
+
+Do větve Pokud ano přidejte:
+
+1. Zobrazit oznámení
+2. Text oznámení:
+
+   Nebyl nalezen žádný běžecký trénink v Apple Health.
+
+3. Zastavit tuto zkratku
+
+Větev Pokud ne nechte pokračovat dalšími akcemi. Na konci této části přidejte:
+
+   Konec podmínky
+
+5. ZÍSKÁNÍ ÚDAJŮ Z TRÉNINKU
+---------------------------
+
+Z výsledku akce Najít vzorky zdraví potřebujete tři hodnoty:
+
+- vzdálenost,
+- datum začátku,
+- datum konce.
+
+Přidejte akci:
+
+   Získat podrobnosti o vzorku zdraví
+
+Jako vstup vyberte výsledek akce Najít vzorky zdraví.
+
+Získejte tyto údaje:
+
+- Vzdálenost,
+- Datum začátku,
+- Datum konce.
+
+V aplikaci Zkratky se dynamické hodnoty zobrazují jako modré bubliny. Tyto modré proměnné použijete později ve slovníku.
+
+6. VZDÁLENOST V METRECH
+-----------------------
+
+Edge Function očekává vzdálenost v metrech.
+
+Pokud Apple Health vrací vzdálenost v metrech, použijte ji přímo.
+
+Pokud Apple Health vrací vzdálenost v kilometrech, přidejte akci:
+
+   Vypočítat
+
+Nastavte:
+
+   vzdálenost × 1000
+
+Výsledek pojmenujte nebo si ho zapamatujte jako:
+
+   distanceMeters
+
+Příklad:
+
+   5,23 km × 1000 = 5230 metrů
+
+7. FORMÁTOVÁNÍ ZAČÁTKU A KONCE
+------------------------------
+
+Pro datum začátku přidejte akci:
+
+   Formátovat datum
+
+Jako vstup vyberte Datum začátku běhu.
+
+Pokud je k dispozici formát ISO 8601, použijte jej.
+
+Stejně naformátujte Datum konce běhu.
+
+Výsledky si zapamatujte jako:
+
+- startTime = naformátovaný začátek,
+- endTime = naformátovaný konec.
+
+Platný výsledek může vypadat například takto:
+
+   2026-09-11T17:20:00+02:00
+
+Pokud iOS nenabízí ISO 8601 přímo, použijte vlastní formát:
+
+   yyyy-MM-dd'T'HH:mm:ssZZZZZ
+
+8. VYTVOŘENÍ UNIKÁTNÍHO ID AKTIVITY
+------------------------------------
+
+Aby se stejný běh při opakovaném spuštění nevložil dvakrát, vytvořte externalId.
+
+Znovu naformátujte Datum začátku například jako:
+
+   yyyyMMdd-HHmmss
+
+Získáte například:
+
+   20260911-172000
+
+Potom vytvořte akci Text s hodnotou:
+
+   apple-health-[zformátovaný začátek]
+
+Do hranatých závorek nevkládejte text doslova. Vložte tam modrou proměnnou z předchozí akce.
+
+Výsledná hodnota bude například:
+
+   apple-health-20260911-172000
+
+Tuto hodnotu použijete jako externalId.
+
+9. VYTVOŘENÍ SLOVNÍKU S DATY
+----------------------------
+
+Přidejte akci:
+
+   Slovník
+
+Do slovníku vložte tyto položky:
+
+   token          váš osobní token
+   distanceMeters vzdálenost běhu v metrech
+   startTime      začátek běhu ve formátu ISO 8601
+   endTime        konec běhu ve formátu ISO 8601
+   activityType   running
+   externalId     unikátní ID aktivity
+
+Přesný význam položek:
+
+- token: vložte osobní token z webové aplikace,
+- distanceMeters: použijte modrou proměnnou s metry,
+- startTime: použijte modrou proměnnou s formátovaným začátkem,
+- endTime: použijte modrou proměnnou s formátovaným koncem,
+- activityType: obyčejný text running,
+- externalId: použijte modrou proměnnou s vytvořeným ID.
+
+Výsledný slovník bude po dosazení hodnot odpovídat tomuto JSON:
+
+{
+  "token": "OSOBNI_TOKEN",
+  "distanceMeters": 5230,
+  "startTime": "2026-09-11T17:20:00+02:00",
+  "endTime": "2026-09-11T17:48:00+02:00",
+  "activityType": "running",
+  "externalId": "apple-health-20260911-172000"
+}
+
+Hodnoty v hranatých závorkách jsou pouze popis. Ve skutečné Zkratce vyberte modré proměnné z předchozích akcí.
+
+10. ODESLÁNÍ DAT NA SUPABASE
+----------------------------
+
+Za akci Slovník přidejte:
+
+   Získat obsah URL
+
+Nastavte:
+
+URL:
+
+   https://xfnfzgragzlwhefniawp.supabase.co/functions/v1/import-health-shortcut
+
+Metoda:
+
+   POST
+
+Tělo požadavku:
+
+   JSON
+
+Do JSON těla vložte celý Slovník z předchozí akce. Nevytvářejte jednotlivé parametry ručně. Jako JSON obsah vyberte proměnnou Slovník.
+
+Logické nastavení akce:
+
+   Získat obsah URL
+     URL: https://xfnfzgragzlwhefniawp.supabase.co/functions/v1/import-health-shortcut
+     Metoda: POST
+     Tělo požadavku: JSON
+     JSON: Slovník
+
+Není potřeba přidávat Authorization hlavičku. Přístup ověřuje osobní token uvnitř JSON.
+
+11. ZOBRAZENÍ VÝSLEDKU IMPORTU
+------------------------------
+
+Za akci Získat obsah URL přidejte:
+
+   Zobrazit výsledek
+
+Případně použijte:
+
+   Zobrazit oznámení
+
+Při úspěchu se zobrazí odpověď podobná:
+
+   Aktivita byla uložena.
+
+Při opakovaném odeslání stejného běhu se zobrazí informace, že aktivita již byla importována.
+
+12. OTEVŘENÍ WEBOVÉ APLIKACE NA KONCI ZKRATKY
+----------------------------------------------
+
+Na úplný konec zkratky přidejte akci:
+
+   Otevřít URL
+
+Do URL vložte:
+
+   https://xmkrejc33.github.io/team_run_challenge/
+
+Doporučené pořadí posledních akcí:
+
+1. Získat obsah URL
+2. Zobrazit výsledek nebo Zobrazit oznámení
+3. Otevřít URL
+
+Po spuštění se nejprve odešle běh na server, zobrazí se výsledek a potom se otevře Team Run Challenge v Safari.
+
+Doporučená celá sekvence akcí:
+
+1. Najít vzorky zdraví
+2. Pokud nebyl nalezen běh
+3. Zobrazit oznámení o chybě
+4. Zastavit tuto zkratku
+5. Konec podmínky
+6. Získat vzdálenost
+7. Získat datum začátku
+8. Získat datum konce
+9. Převést vzdálenost na metry, pokud je potřeba
+10. Formátovat začátek do ISO 8601
+11. Formátovat konec do ISO 8601
+12. Vytvořit externalId
+13. Vytvořit slovník
+14. Získat obsah URL
+15. Zobrazit výsledek
+16. Otevřít URL
+
+13. POVOLENÍ PŘÍSTUPU K APPLE HEALTH
+-------------------------------------
+
+Při prvním spuštění se iPhone zeptá na oprávnění ke čtení dat ze Zdraví.
+
+Povolte přístup alespoň k:
+
+- cvičením,
+- běžeckým aktivitám,
+- vzdálenosti, pokud ji Zkratky nabízejí jako samostatný údaj.
+
+Pokud Apple Health vzdálenost u tréninku nevrací, může být potřeba hledat samostatné vzorky typu Vzdálenost při chůzi a běhu.
+
+14. TESTOVÁNÍ
+-------------
+
+Před prvním ostrým testem ověřte:
+
+- že je token vložený přesně a bez mezer,
+- že vzdálenost je v metrech,
+- že začátek je před koncem,
+- že activityType je přesně running,
+- že externalId je pro každý běh jedinečné,
+- že je povolený přístup ke Zdraví.
+
+Po spuštění zkontrolujte:
+
+- že se zobrazí úspěšné oznámení,
+- že aktivita přibyla v Team Run Challenge,
+- že se stejný běh při druhém spuštění nevloží znovu,
+- že se otevře webová aplikace.
+
+15. SDÍLENÍ ZKRATKY S DALŠÍMI UŽIVATELI
+----------------------------------------
+
+Po vytvoření a otestování můžete Zkratku sdílet:
+
+1. Otevřete detaily Zkratky.
+2. Klepněte na ikonu sdílení.
+3. Zvolte Kopírovat odkaz na iCloud nebo odešlete Zkratku přes Zprávy/AirDrop.
+4. Druhý uživatel klepne na odkaz a zvolí Přidat zkratku.
+5. Do zkopírované Zkratky vloží svůj vlastní token.
+6. Při prvním spuštění povolí Apple Health.
+
+Jeden token nepoužívejte pro více uživatelů.
+
+KONEČNÉ POŘADÍ ZKRATKY
+=======================
+
+Najít poslední běžecký trénink
+→ Zkontrolovat, zda existuje
+→ Získat vzdálenost, začátek a konec
+→ Převést vzdálenost na metry
+→ Naformátovat datum
+→ Vytvořit externalId
+→ Vytvořit Slovník
+→ Získat obsah URL přes POST
+→ Zobrazit výsledek
+→ Otevřít webovou aplikaci

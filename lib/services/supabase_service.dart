@@ -263,14 +263,14 @@ class SupabaseService {
         context: 'challenges public REST read failed',
         load: () => fetchPublicRows(
           table: 'challenges',
-          select: 'id,name,start_date,distance,team_names,is_active,originator_id',
+          select: 'id,name,start_date,end_date,distance,team_names,winner_team,is_active,originator_id',
           orderColumn: 'start_date',
           ascending: ascending,
         ),
       ),
       _FallbackAttempt(
         context: 'challenges select failed',
-        load: () => client.from('challenges').select('id, name, start_date, distance, team_names, is_active, originator_id').order('start_date', ascending: ascending),
+        load: () => client.from('challenges').select('id, name, start_date, end_date, distance, team_names, winner_team, is_active, originator_id').order('start_date', ascending: ascending),
       ),
     ], 'challenges load');
 

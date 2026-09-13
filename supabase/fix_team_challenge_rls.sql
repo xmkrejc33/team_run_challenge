@@ -18,6 +18,8 @@ create table if not exists public.challenges (
   distance double precision not null,
   team_names text not null default '',
   is_active boolean not null default true,
+  end_date timestamptz,
+  winner_team text,
   originator_id uuid references auth.users(id) on delete set null
 );
 
@@ -44,6 +46,12 @@ alter table public.challenges
 
 alter table public.challenges
   add column if not exists team_names text not null default '';
+
+alter table public.challenges
+  add column if not exists end_date timestamptz;
+
+alter table public.challenges
+  add column if not exists winner_team text;
 
 
 create unique index if not exists team_members_team_user_idx
@@ -116,7 +124,7 @@ USING (true);
 
 -- Team members may change only the membership-related challenge fields.
 REVOKE UPDATE ON public.challenges FROM authenticated;
-GRANT UPDATE (team_names, is_active) ON public.challenges TO authenticated;
+GRANT UPDATE (team_names, is_active, end_date, winner_team) ON public.challenges TO authenticated;
 
 -- teams policies
 CREATE POLICY "teams_select_all"

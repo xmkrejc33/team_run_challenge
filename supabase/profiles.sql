@@ -9,9 +9,13 @@ create table if not exists public.profiles (
   team_id bigint references public.teams(id) on delete set null,
   team_name text,
   avatar_base64 text,
+  last_sync_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.profiles
+  add column if not exists last_sync_at timestamptz;
 
 -- Copy existing profile metadata before it is removed from auth.users.
 insert into public.profiles (user_id, runner_name, team_id, team_name, avatar_base64)
